@@ -22,7 +22,7 @@ namespace SchoolTimeCalc.Services
 
         public async Task<bool> AuthenticateAndSyncAsync(string server, string school, string username, string password)
         {
-            string sessionId = null;
+            string? sessionId = null;
             try
             {
                 var request = new UntisRpcRequest
@@ -77,10 +77,10 @@ namespace SchoolTimeCalc.Services
                 var ttRes = await _client.GetTimetableAsync(ttReq, school, cookie);
 
                 // Serialize the JsonElement results to string
-                string subjectsJson = subjRes?.Result?.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(subjRes.Result) : "[]";
-                string teachersJson = teachRes?.Result?.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(teachRes.Result) : "[]";
-                string roomsJson = roomsRes?.Result?.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(roomsRes.Result) : "[]";
-                string lessonsJson = ttRes?.Result?.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(ttRes.Result) : "[]";
+                string subjectsJson = subjRes != null && subjRes.Result.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(subjRes.Result) : "[]";
+                string teachersJson = teachRes != null && teachRes.Result.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(teachRes.Result) : "[]";
+                string roomsJson = roomsRes != null && roomsRes.Result.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(roomsRes.Result) : "[]";
+                string lessonsJson = ttRes != null && ttRes.Result.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(ttRes.Result) : "[]";
 
                 var user = await _authService.GetCurrentUserAsync();
 
