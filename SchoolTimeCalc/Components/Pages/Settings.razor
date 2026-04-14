@@ -1,0 +1,71 @@
+@page "/settings"
+@using SchoolTimeCalc.Data
+@using SchoolTimeCalc.Models
+@using SchoolTimeCalc.Services
+@inject ApplicationDbContext DbContext
+@inject MockAuthService AuthService
+@rendermode InteractiveServer
+
+<PageTitle>Settings</PageTitle>
+
+<h1 class="text-3xl font-bold mb-6 text-gray-800">Settings</h1>
+
+@if (user == null)
+{
+    <p class="text-gray-600">Loading...</p>
+}
+else
+{
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-md border border-gray-200">
+        <EditForm Model="user" OnValidSubmit="SaveSettings">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2" for="bundesland">
+                    Austrian State (Bundesland)
+                </label>
+                <InputSelect id="bundesland" @bind-Value="user.Bundesland" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select your state...</option>
+                    @foreach (var state in AustrianStates.States)
+                    {
+                        <option value="@state">@state</option>
+                    }
+                </InputSelect>
+            </div>
+            
+            <div class="flex items-center">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                    Save Settings
+                </button>
+                
+                @if (showSuccessMessage)
+                {
+                    <span class="text-green-600 ml-4 font-medium transition-opacity duration-300">Settings saved successfully!</span>
+                }
+            </div>
+        </EditForm>
+    </div>
+}
+
+@code {
+    private ApplicationUser? user;
+    private bool showSuccessMessage = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await AuthService.GetCurrentUserAsync();
+    }
+
+    private async Task SaveSettings()
+    {
+        if (user != null)
+        {
+            DbContext.Users.Update(user);
+            await DbContext.SaveChangesAsync();
+            showSuccessMessage = true;
+            StateHasChanged();
+            
+            await Task.Delay(3000);
+            showSuccessMessage = false;
+            StateHasChanged();
+        }
+    }
+}

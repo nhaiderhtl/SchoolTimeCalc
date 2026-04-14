@@ -1,0 +1,39 @@
+@page "/"
+@using SchoolTimeCalc.Services
+@inject MockAuthService AuthService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+<h1 class="text-3xl font-bold mb-6 text-gray-800">Welcome to SchoolTimeCalc</h1>
+
+@if (loading)
+{
+    <p class="text-gray-600">Loading...</p>
+}
+else
+{
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-md border border-gray-200">
+        <p class="text-gray-700 mb-4">Your selected state is: <strong>@user?.Bundesland</strong></p>
+        <a href="settings" class="text-blue-600 hover:text-blue-800 font-medium hover:underline">Change State</a>
+    </div>
+}
+
+@code {
+    private bool loading = true;
+    private SchoolTimeCalc.Models.ApplicationUser? user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await AuthService.GetCurrentUserAsync();
+        if (string.IsNullOrEmpty(user.Bundesland))
+        {
+            NavigationManager.NavigateTo("settings");
+        }
+        else
+        {
+            loading = false;
+        }
+    }
+}
