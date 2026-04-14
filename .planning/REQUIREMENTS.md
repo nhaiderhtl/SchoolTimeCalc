@@ -7,8 +7,8 @@
 
 ### Data Sync
 
-- [ ] **SYNC-01**: User can authenticate with their school's WebUntis instance.
-- [ ] **SYNC-02**: System automatically fetches and securely caches the user's base timetable.
+- [x] **SYNC-01**: User can authenticate with their school's WebUntis instance.
+- [x] **SYNC-02**: System automatically fetches and securely caches the user's base timetable.
 - [ ] **SYNC-03**: System fetches Austrian public bank holidays dynamically via an API (e.g., data.gv.at or Nager.Date).
 - [ ] **SYNC-04**: System fetches Austrian state-specific school holidays dynamically (e.g., Semesterferien).
 
@@ -53,8 +53,8 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SYNC-01 | Phase 2 | Pending |
-| SYNC-02 | Phase 2 | Pending |
+| SYNC-01 | Phase 2 | Complete |
+| SYNC-02 | Phase 2 | Complete |
 | SYNC-03 | Phase 3 | Pending |
 | SYNC-04 | Phase 3 | Pending |
 | CALC-01 | Phase 4 | Pending |
