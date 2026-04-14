@@ -16,6 +16,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<MockAuthService>();
+builder.Services.AddScoped<WebUntisService>();
 
 builder.Services.AddRefitClient<IWebUntisClient>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://demo.webuntis.com"))
