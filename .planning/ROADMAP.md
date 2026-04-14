@@ -18,7 +18,7 @@
   1. Application compiles and runs as a modern web application (e.g., Blazor)
   2. User can select their specific Austrian Bundesland and save it to their profile/session
 **Plans**: 3 plans
-- [ ] 01-01-PLAN.md — Scaffold Blazor Web App and Tailwind CSS
+- [x] 01-01-PLAN.md — Scaffold Blazor Web App and Tailwind CSS
 - [ ] 01-02-PLAN.md — Configure EF Core, PostgreSQL, and Mock Auth
 - [ ] 01-03-PLAN.md — Build Settings UI for Bundesland selection
 **UI hint**: yes

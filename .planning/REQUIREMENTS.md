@@ -28,7 +28,7 @@
 
 ### Settings
 
-- [ ] **SET-01**: User can select their specific Austrian Bundesland (State) to ensure accurate school holiday calculations.
+- [x] **SET-01**: User can select their specific Austrian Bundesland (State) to ensure accurate school holiday calculations.
 
 ## v2 Requirements
 
@@ -65,7 +65,7 @@
 | UI-02 | Phase 5 | Pending |
 | UI-03 | Phase 5 | Pending |
 | UI-04 | Phase 5 | Pending |
-| SET-01 | Phase 1 | Pending |
+| SET-01 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 13 total
