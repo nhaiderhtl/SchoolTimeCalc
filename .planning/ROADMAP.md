@@ -20,7 +20,7 @@
 **Plans**: 3 plans
 - [x] 01-01-PLAN.md — Scaffold Blazor Web App and Tailwind CSS
 - [x] 01-02-PLAN.md — Configure EF Core, PostgreSQL, and Mock Auth
-- [ ] 01-03-PLAN.md — Build Settings UI for Bundesland selection
+- [x] 01-03-PLAN.md — Build Settings UI for Bundesland selection
 **UI hint**: yes
 
 ### Phase 2: WebUntis Integration
