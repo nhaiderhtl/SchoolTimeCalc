@@ -30,7 +30,10 @@
 **Success Criteria** (what must be TRUE):
   1. User can successfully authenticate using their WebUntis credentials
   2. System retrieves and stores the user's timetable securely without requiring re-fetch on every page load
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 02-01-PLAN.md — Database Models & API Client Contracts
+- [ ] 02-02-PLAN.md — Authentication & Sync Service
+- [ ] 02-03-PLAN.md — Login UI & Integration
 
 ### Phase 3: Holiday Integration
 **Goal**: Application has comprehensive data of all Austrian holidays for the academic year
