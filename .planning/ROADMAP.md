@@ -33,7 +33,7 @@
 **Plans**: 3 plans
 - [x] 02-01-PLAN.md — Database Models & API Client Contracts
 - [x] 02-02-PLAN.md — Authentication & Sync Service
-- [ ] 02-03-PLAN.md — Login UI & Integration
+- [x] 02-03-PLAN.md — Login UI & Integration
 
 ### Phase 3: Holiday Integration
 **Goal**: Application has comprehensive data of all Austrian holidays for the academic year
