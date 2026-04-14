@@ -22,6 +22,7 @@ namespace SchoolTimeCalc.Services
 
         public async Task<bool> AuthenticateAndSyncAsync(string server, string school, string username, string password)
         {
+            string sessionId = null;
             try
             {
                 var request = new UntisRpcRequest
@@ -42,14 +43,44 @@ namespace SchoolTimeCalc.Services
                     return false;
                 }
 
-                string sessionId = response.Result.SessionId;
+                sessionId = response.Result.SessionId;
+                string cookie = $"JSESSIONID={sessionId}";
 
-                // For now, placeholders for real fetching logic 
-                // Zero knowledge - we get the data and don't store passwords, just the JSON payloads
-                string subjectsJson = "[]";
-                string teachersJson = "[]";
-                string roomsJson = "[]";
-                string lessonsJson = "[]";
+                // 1. Fetch data
+                var subjReq = new UntisRpcRequest { Id = "subj-1", Method = "getSubjects" };
+                var subjRes = await _client.GetSubjectsAsync(subjReq, school, cookie);
+
+                var teachReq = new UntisRpcRequest { Id = "teach-1", Method = "getTeachers" };
+                var teachRes = await _client.GetTeachersAsync(teachReq, school, cookie);
+
+                var roomsReq = new UntisRpcRequest { Id = "rooms-1", Method = "getRooms" };
+                var roomsRes = await _client.GetRoomsAsync(roomsReq, school, cookie);
+
+                var ttReq = new UntisRpcRequest
+                {
+                    Id = "tt-1",
+                    Method = "getTimetable",
+                    Params = new
+                    {
+                        options = new
+                        {
+                            element = new
+                            {
+                                id = response.Result.PersonType == 5 ? response.Result.PersonId : response.Result.ClassId,
+                                type = response.Result.PersonType
+                            },
+                            startDate = int.Parse(DateTime.Now.ToString("yyyyMM01")),
+                            endDate = int.Parse(DateTime.Now.ToString("yyyyMM") + DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+                        }
+                    }
+                };
+                var ttRes = await _client.GetTimetableAsync(ttReq, school, cookie);
+
+                // Serialize the JsonElement results to string
+                string subjectsJson = subjRes?.Result?.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(subjRes.Result) : "[]";
+                string teachersJson = teachRes?.Result?.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(teachRes.Result) : "[]";
+                string roomsJson = roomsRes?.Result?.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(roomsRes.Result) : "[]";
+                string lessonsJson = ttRes?.Result?.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(ttRes.Result) : "[]";
 
                 var user = await _authService.GetCurrentUserAsync();
 
@@ -68,15 +99,23 @@ namespace SchoolTimeCalc.Services
 
                 await _dbContext.SaveChangesAsync();
 
-                // Placeholder for logout request
-                // var logoutRequest = new UntisRpcRequest { Method = "logout" };
-                // await _client.LogoutAsync(logoutRequest, school);
-
                 return true;
             }
             catch
             {
                 return false;
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(sessionId))
+                {
+                    try
+                    {
+                        var logoutRequest = new UntisRpcRequest { Id = "logout-1", Method = "logout" };
+                        await _client.LogoutAsync(logoutRequest, school, $"JSESSIONID={sessionId}");
+                    }
+                    catch { /* Ignore logout errors */ }
+                }
             }
         }
     }
