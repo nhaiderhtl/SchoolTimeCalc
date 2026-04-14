@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
+using Polly;
+using Polly.Extensions.Http;
+using Refit;
 using SchoolTimeCalc.Data;
 using SchoolTimeCalc.Services;
 
@@ -13,6 +16,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<MockAuthService>();
+
+builder.Services.AddRefitClient<IWebUntisClient>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://demo.webuntis.com"))
+    .AddPolicyHandler(HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
