@@ -5,5 +5,6 @@ namespace SchoolTimeCalc.Models
         public int Id { get; set; }
         public string Username { get; set; } = string.Empty;
         public string? Bundesland { get; set; }
+        public WebUntisData? WebUntisData { get; set; }
     }
 }
