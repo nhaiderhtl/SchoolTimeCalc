@@ -53,24 +53,24 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SYNC-01 | Phase | Pending |
-| SYNC-02 | Phase | Pending |
-| SYNC-03 | Phase | Pending |
-| SYNC-04 | Phase | Pending |
-| CALC-01 | Phase | Pending |
-| CALC-02 | Phase | Pending |
-| CALC-03 | Phase | Pending |
-| CALC-04 | Phase | Pending |
-| UI-01 | Phase | Pending |
-| UI-02 | Phase | Pending |
-| UI-03 | Phase | Pending |
-| UI-04 | Phase | Pending |
-| SET-01 | Phase | Pending |
+| SYNC-01 | Phase 2 | Pending |
+| SYNC-02 | Phase 2 | Pending |
+| SYNC-03 | Phase 3 | Pending |
+| SYNC-04 | Phase 3 | Pending |
+| CALC-01 | Phase 4 | Pending |
+| CALC-02 | Phase 4 | Pending |
+| CALC-03 | Phase 4 | Pending |
+| CALC-04 | Phase 4 | Pending |
+| UI-01 | Phase 5 | Pending |
+| UI-02 | Phase 5 | Pending |
+| UI-03 | Phase 5 | Pending |
+| UI-04 | Phase 5 | Pending |
+| SET-01 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13 ⚠️
+- Mapped to phases: 13
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-14*
