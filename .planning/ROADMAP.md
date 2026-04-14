@@ -32,7 +32,7 @@
   2. System retrieves and stores the user's timetable securely without requiring re-fetch on every page load
 **Plans**: 3 plans
 - [x] 02-01-PLAN.md — Database Models & API Client Contracts
-- [ ] 02-02-PLAN.md — Authentication & Sync Service
+- [x] 02-02-PLAN.md — Authentication & Sync Service
 - [ ] 02-03-PLAN.md — Login UI & Integration
 
 ### Phase 3: Holiday Integration
