@@ -17,9 +17,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<MockAuthService>();
 builder.Services.AddScoped<WebUntisService>();
+builder.Services.AddScoped<NationalHolidayService>();
+builder.Services.AddScoped<SchoolHolidayService>();
 
-builder.Services.AddRefitClient<IWebUntisClient>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://demo.webuntis.com"))
+builder.Services.AddHttpClient("WebUntis")
+    .AddPolicyHandler(HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));
+
+builder.Services.AddHttpClient("DataGvAt")
     .AddPolicyHandler(HttpPolicyExtensions
         .HandleTransientHttpError()
         .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));
