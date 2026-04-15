@@ -13,18 +13,10 @@
         <form @onsubmit="HandleSubmit">
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="server">
-                    Server URL (e.g. tipo.webuntis.com)
+                    Server URL (e.g. htl-leonding.webuntis.com)
                 </label>
                 <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                       id="server" type="text" placeholder="tipo.webuntis.com" @bind="server" required />
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="school">
-                    School Name
-                </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                       id="school" type="text" placeholder="my-school-name" @bind="school" required />
+                       id="server" type="text" placeholder="htl-leonding.webuntis.com" @bind="server" required />
             </div>
 
             <div class="mb-4">
@@ -73,7 +65,6 @@
 
 @code {
     private string server = string.Empty;
-    private string school = string.Empty;
     private string username = string.Empty;
     private string password = string.Empty;
 
@@ -82,7 +73,7 @@
 
     private async Task HandleSubmit()
     {
-        if (string.IsNullOrWhiteSpace(server) || string.IsNullOrWhiteSpace(school) || string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        if (string.IsNullOrWhiteSpace(server) || string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
         {
             errorMessage = "All fields are required.";
             return;
@@ -91,9 +82,12 @@
         isSyncing = true;
         errorMessage = string.Empty;
 
+        // Extract school name from server URL (e.g. htl-leonding from htl-leonding.webuntis.com)
+        var derivedSchool = server.Split('.')[0].ToLowerInvariant();
+
         try
         {
-            var success = await WebUntisService.AuthenticateAndSyncAsync(server, school, username, password);
+            var success = await WebUntisService.AuthenticateAndSyncAsync(server, derivedSchool, username, password);
             if (success)
             {
                 NavigationManager.NavigateTo("/");
