@@ -11,3 +11,10 @@ Resolved debug sessions. Used by `gsd-debugger` to surface known-pattern hypothe
 - **Fix:** Created a docker-compose.yml file configured with the credentials expected by the application (postgres/postgres on port 5432) and started the database.
 - **Files changed:** docker-compose.yml
 ---
+## webuntis-connection-htl-leonding — Login fails with invalid schoolname error code -8500
+- **Date:** 2026-04-15T00:00:00Z
+- **Error patterns:** login fails, invalid schoolname, error code -8500, WebUntis API
+- **Root cause:** Users often enter the display name of their school (e.g. "HTBLA Linz-Leonding") instead of the internal WebUntis login name (e.g. "htl-leonding"), causing the API to reject the request with code -8500.
+- **Fix:** Removed the school name input field entirely from WebUntisLogin.razor, and instead derive it directly from the subdomain of the provided server URL.
+- **Files changed:** SchoolTimeCalc/Components/Pages/WebUntisLogin.razor
+---
