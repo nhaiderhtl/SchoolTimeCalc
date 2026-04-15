@@ -9,8 +9,8 @@
 
 - [x] **SYNC-01**: User can authenticate with their school's WebUntis instance.
 - [x] **SYNC-02**: System automatically fetches and securely caches the user's base timetable.
-- [ ] **SYNC-03**: System fetches Austrian public bank holidays dynamically via an API (e.g., data.gv.at or Nager.Date).
-- [ ] **SYNC-04**: System fetches Austrian state-specific school holidays dynamically (e.g., Semesterferien).
+- [x] **SYNC-03**: System fetches Austrian public bank holidays dynamically via an API (e.g., data.gv.at or Nager.Date).
+- [x] **SYNC-04**: System fetches Austrian state-specific school holidays dynamically (e.g., Semesterferien).
 
 ### Calculations
 
@@ -55,8 +55,8 @@
 |-------------|-------|--------|
 | SYNC-01 | Phase 2 | Complete |
 | SYNC-02 | Phase 2 | Complete |
-| SYNC-03 | Phase 3 | Pending |
-| SYNC-04 | Phase 3 | Pending |
+| SYNC-03 | Phase 3 | Complete |
+| SYNC-04 | Phase 3 | Complete |
 | CALC-01 | Phase 4 | Pending |
 | CALC-02 | Phase 4 | Pending |
 | CALC-03 | Phase 4 | Pending |
