@@ -12,6 +12,7 @@ namespace SchoolTimeCalc.Data
 
         public DbSet<ApplicationUser> Users { get; set; } = null!;
         public DbSet<WebUntisData> WebUntisData { get; set; } = null!;
+        public DbSet<Holiday> Holidays { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
