@@ -1,5 +1,5 @@
 ---
-status: awaiting_human_verify
+status: resolved
 trigger: "[verbatim user input]"
 created: 2026-04-14T00:00:00Z
 updated: 2026-04-14T00:00:00Z
