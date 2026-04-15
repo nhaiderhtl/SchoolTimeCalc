@@ -14,13 +14,12 @@ Accurately and automatically calculating the exact remaining time (days, hours, 
 
 <!-- Shipped and confirmed valuable. -->
 
-(None yet — ship to validate)
+- [x] Sync user's school timetable automatically from WebUntis (Phase 02)
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Sync user's school timetable automatically from WebUntis
 - [ ] Fetch official Austrian school holidays dynamically via an API
 - [ ] Calculate total remaining school days in the academic year
 - [ ] Calculate total remaining hours/lessons for the academic year
