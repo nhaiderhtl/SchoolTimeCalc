@@ -4,7 +4,7 @@
 
 - [ ] **Phase 1: Setup & Settings** - Application scaffolding and state configuration
 - [ ] **Phase 2: WebUntis Integration** - Secure authentication and timetable synchronization
-- [ ] **Phase 3: Holiday Integration** - Fetching national and state-specific Austrian holidays
+- [ ] **Phase 3: WebUntis Holiday Integration** - Fetching holidays directly from the WebUntis API
 - [ ] **Phase 4: Calculation Engine** - Computing remaining days, hours, and subject lessons
 - [ ] **Phase 5: Presentation & Dashboard** - Mobile-responsive UI with metrics and calendar views
 
@@ -35,16 +35,17 @@
 - [x] 02-02-PLAN.md — Authentication & Sync Service
 - [x] 02-03-PLAN.md — Login UI & Integration
 
-### Phase 3: Holiday Integration
-**Goal**: Application has comprehensive data of all Austrian holidays for the academic year
-**Depends on**: Phase 1
-**Requirements**: SYNC-03, SYNC-04
+### Phase 3: WebUntis Holiday Integration
+**Goal**: Retrieve and cache holiday data directly from the WebUntis API to exclude those days from calculations
+**Depends on**: Phase 2
+**Requirements**: SYNC-03
 **Success Criteria** (what must be TRUE):
-  1. System successfully retrieves and caches Austrian national public holidays
-  2. System successfully retrieves state-specific school holidays based on the user's selected Bundesland
-**Plans**: 2 plans
-- [x] 03-01-PLAN.md — Implemented Holiday Integration baseline with dummy file.cs
-- [x] 03-02-PLAN.md — Gap Closure: National & School Holiday Integration
+  1. System successfully fetches holiday data from WebUntis API alongside timetables
+  2. Holiday data is structured to be subtracted from or not added to total school day counts
+**Plans**: 3 plans
+- [ ] 03-01-PLAN.md — Holiday Data Models & API Client Expansion
+- [ ] 03-02-PLAN.md — Holiday Sync Service
+- [ ] 03-03-PLAN.md — Integration & Settings UI Updates
 
 ### Phase 4: Calculation Engine
 **Goal**: Application accurately computes all remaining academic time metrics
@@ -73,6 +74,6 @@
 |-------|----------------|--------|-----------|
 | 1. Setup & Settings | 0/0 | Not started | - |
 | 2. WebUntis Integration | 0/0 | Not started | - |
-| 3. Holiday Integration | 0/0 | Not started | - |
+| 3. WebUntis Holiday Integration | 0/3 | Not started | - |
 | 4. Calculation Engine | 0/0 | Not started | - |
 | 5. Presentation & Dashboard | 0/0 | Not started | - |
