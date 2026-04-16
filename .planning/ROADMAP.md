@@ -42,10 +42,11 @@
 **Success Criteria** (what must be TRUE):
   1. System successfully fetches holiday data from WebUntis API alongside timetables
   2. Holiday data is structured to be subtracted from or not added to total school day counts
-**Plans**: 3 plans
+**Plans**: 4 plans
 - [x] 03-01-PLAN.md — Holiday Data Models & API Client Expansion
 - [x] 03-02-PLAN.md — Holiday Sync Service
 - [x] 03-03-PLAN.md — Integration & Settings UI Updates
+- [ ] 03-04-PLAN.md — Fix Background Sync and Orphaned Services
 
 ### Phase 4: Calculation Engine
 **Goal**: Application accurately computes all remaining academic time metrics
