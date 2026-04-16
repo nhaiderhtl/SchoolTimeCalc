@@ -58,7 +58,9 @@
   1. System outputs total remaining school days accurately excluding all holidays and weekends
   2. System outputs total remaining lessons globally and broken down per subject
   3. Calculations successfully merge the base timetable with the acquired holiday datasets
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 04-01-PLAN.md — Core Calculation Logic & Service
+- [ ] 04-02-PLAN.md — Unit Tests for Calculation Logic
 
 ### Phase 5: Presentation & Dashboard
 **Goal**: Users can view their remaining time and schedules via an accessible interface
