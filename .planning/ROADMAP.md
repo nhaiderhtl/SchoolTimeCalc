@@ -47,7 +47,7 @@
 - [x] 03-02-PLAN.md — Holiday Sync Service
 - [x] 03-03-PLAN.md — Integration & Settings UI Updates
 - [x] 03-04-PLAN.md — Fix Background Sync and Orphaned Services
-- [ ] 03-05-PLAN.md — Fix core integration issues (credentials, subdivision map)
+- [x] 03-05-PLAN.md — Fix core integration issues (credentials, subdivision map)
 - [ ] 03-06-PLAN.md — Integrate calculation path and add tests
 
 ### Phase 4: Calculation Engine
