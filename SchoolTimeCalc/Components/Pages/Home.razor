@@ -6,6 +6,7 @@
 @inject MockAuthService AuthService
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavigationManager
+@inject CalculationEngine CalculationEngine
 @rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
@@ -37,6 +38,7 @@ else
                 </div>
                 <p class="text-gray-700 mb-2">School: <strong>@webUntisData?.SchoolName</strong></p>
                 <p class="text-gray-600 text-sm mb-4">Data length: @webUntisData?.SubjectsJson?.Length characters</p>
+                <p class="text-gray-700 mb-4 font-semibold">Days Remaining (excluding holidays): @remainingDays</p>
                 <a href="webuntis-login" class="text-blue-600 hover:text-blue-800 font-medium hover:underline text-sm">Resync Timetable</a>
             }
             else
@@ -55,6 +57,7 @@ else
     private SchoolTimeCalc.Models.ApplicationUser? user;
     private WebUntisData? webUntisData;
     private bool hasWebUntisData = false;
+    private int remainingDays = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,6 +70,10 @@ else
         {
             webUntisData = await DbContext.WebUntisData.FirstOrDefaultAsync(d => d.ApplicationUserId == user.Id);
             hasWebUntisData = webUntisData != null && !string.IsNullOrEmpty(webUntisData.SchoolName);
+            if (hasWebUntisData)
+            {
+                remainingDays = await CalculationEngine.CalculateRemainingSchoolDaysAsync(user.Id);
+            }
             loading = false;
         }
     }
