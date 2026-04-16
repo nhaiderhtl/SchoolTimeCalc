@@ -59,7 +59,7 @@
   2. System outputs total remaining lessons globally and broken down per subject
   3. Calculations successfully merge the base timetable with the acquired holiday datasets
 **Plans**: 2 plans
-- [ ] 04-01-PLAN.md — Core Calculation Logic & Service
+- [x] 04-01-PLAN.md — Core Calculation Logic & Service
 - [ ] 04-02-PLAN.md — Unit Tests for Calculation Logic
 
 ### Phase 5: Presentation & Dashboard
@@ -80,5 +80,5 @@
 | 1. Setup & Settings | 0/0 | Not started | - |
 | 2. WebUntis Integration | 0/0 | Not started | - |
 | 3. WebUntis Holiday Integration | 2/3 | In Progress|  |
-| 4. Calculation Engine | 0/0 | Not started | - |
+| 4. Calculation Engine | 1/2 | In Progress|  |
 | 5. Presentation & Dashboard | 0/0 | Not started | - |

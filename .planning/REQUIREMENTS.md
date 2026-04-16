@@ -14,10 +14,10 @@
 
 ### Calculations
 
-- [ ] **CALC-01**: System calculates the total number of school days remaining in the academic year.
-- [ ] **CALC-02**: System calculates the total number of school hours/lessons remaining in the academic year.
-- [ ] **CALC-03**: System calculates the remaining number of lessons broken down on a per-subject basis.
-- [ ] **CALC-04**: System correctly factors out weekends, bank holidays, and school holidays from all calculations.
+- [x] **CALC-01**: System calculates the total number of school days remaining in the academic year.
+- [x] **CALC-02**: System calculates the total number of school hours/lessons remaining in the academic year.
+- [x] **CALC-03**: System calculates the remaining number of lessons broken down on a per-subject basis.
+- [x] **CALC-04**: System correctly factors out weekends, bank holidays, and school holidays from all calculations.
 
 ### User Interface
 
@@ -57,10 +57,10 @@
 | SYNC-02 | Phase 2 | Complete |
 | SYNC-03 | Phase 3 | Complete |
 | SYNC-04 | Phase 3 | Complete |
-| CALC-01 | Phase 4 | Pending |
-| CALC-02 | Phase 4 | Pending |
-| CALC-03 | Phase 4 | Pending |
-| CALC-04 | Phase 4 | Pending |
+| CALC-01 | Phase 4 | Complete |
+| CALC-02 | Phase 4 | Complete |
+| CALC-03 | Phase 4 | Complete |
+| CALC-04 | Phase 4 | Complete |
 | UI-01 | Phase 5 | Pending |
 | UI-02 | Phase 5 | Pending |
 | UI-03 | Phase 5 | Pending |
