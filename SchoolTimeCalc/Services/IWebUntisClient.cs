@@ -22,6 +22,9 @@ namespace SchoolTimeCalc.Services
         Task<UntisRpcResponse<JsonElement>> GetTimetableAsync([Body] UntisRpcRequest request, [Query] string school, [Header("Cookie")] string cookie);
 
         [Post("/WebUntis/jsonrpc.do")]
+        Task<UntisRpcResponse<JsonElement>> GetHolidaysAsync([Body] UntisRpcRequest request, [Query] string school, [Header("Cookie")] string cookie);
+
+        [Post("/WebUntis/jsonrpc.do")]
         Task<UntisRpcResponse<object>> LogoutAsync([Body] UntisRpcRequest request, [Query] string school, [Header("Cookie")] string cookie);
     }
 }

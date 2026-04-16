@@ -67,4 +67,22 @@ namespace SchoolTimeCalc.Services
         [JsonPropertyName("message")]
         public string Message { get; set; } = string.Empty;
     }
+
+    public class UntisHolidayDto
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("longName")]
+        public string LongName { get; set; } = string.Empty;
+
+        [JsonPropertyName("startDate")]
+        public int StartDate { get; set; } // yyyyMMdd format
+
+        [JsonPropertyName("endDate")]
+        public int EndDate { get; set; } // yyyyMMdd format
+    }
 }
