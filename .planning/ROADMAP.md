@@ -72,7 +72,7 @@
   3. User can view an interactive calendar displaying their timetable overlaid with holidays
 **Plans**: 3 plans
 - [x] 05-01-PLAN.md — Macro Progress Dashboard
-- [ ] 05-02-PLAN.md — Subject Breakdown View
+- [x] 05-02-PLAN.md — Subject Breakdown View
 - [ ] 05-03-PLAN.md — Week View Calendar
 **UI hint**: yes
 

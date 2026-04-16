@@ -22,9 +22,9 @@
 ### User Interface
 
 - [x] **UI-01**: Dashboard displays high-level macro progress (total days and hours remaining).
-- [ ] **UI-02**: Detailed view displays remaining lessons on a per-subject basis.
+- [x] **UI-02**: Detailed view displays remaining lessons on a per-subject basis.
 - [ ] **UI-03**: Interactive calendar view visualizes the user's timetable overlaid with fetched holidays.
-- [ ] **UI-04**: Application is mobile-responsive and accessible from standard web browsers.
+- [x] **UI-04**: Application is mobile-responsive and accessible from standard web browsers.
 
 ### Settings
 
@@ -62,9 +62,9 @@
 | CALC-03 | Phase 4 | Complete |
 | CALC-04 | Phase 4 | Complete |
 | UI-01 | Phase 5 | Complete |
-| UI-02 | Phase 5 | Pending |
+| UI-02 | Phase 5 | Complete |
 | UI-03 | Phase 5 | Pending |
-| UI-04 | Phase 5 | Pending |
+| UI-04 | Phase 5 | Complete |
 | SET-01 | Phase 1 | Complete |
 
 **Coverage:**
