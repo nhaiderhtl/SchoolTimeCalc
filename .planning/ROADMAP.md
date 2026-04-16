@@ -73,7 +73,7 @@
 **Plans**: 3 plans
 - [x] 05-01-PLAN.md — Macro Progress Dashboard
 - [x] 05-02-PLAN.md — Subject Breakdown View
-- [ ] 05-03-PLAN.md — Week View Calendar
+- [x] 05-03-PLAN.md — Week View Calendar
 **UI hint**: yes
 
 ## Progress
