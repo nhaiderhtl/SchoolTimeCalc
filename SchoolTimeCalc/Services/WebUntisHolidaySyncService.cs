@@ -122,6 +122,9 @@ namespace SchoolTimeCalc.Services
                     _dbContext.Holidays.AddRange(allHolidaysToSave);
                 }
 
+                var webUntisData = await _dbContext.Set<WebUntisData>()
+                    .FirstOrDefaultAsync(w => w.SchoolName == schoolName, cancellationToken);
+
                 if (webUntisData != null)
                 {
                     webUntisData.LastHolidaySync = DateTime.UtcNow;
