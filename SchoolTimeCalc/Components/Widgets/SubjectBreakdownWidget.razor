@@ -1,0 +1,87 @@
+@using SchoolTimeCalc.Models
+@using SchoolTimeCalc.Services
+@inject ICalculationService CalculationService
+@inject MockAuthService AuthService
+@rendermode InteractiveServer
+
+@if (loading)
+{
+    <div class="animate-pulse bg-gray-200 rounded-lg h-32 w-full mt-4"></div>
+}
+else if (result != null && result.SubjectLessons.Any())
+{
+    <div class="grid grid-cols-1 gap-4">
+        @foreach (var subject in result.SubjectLessons.OrderByDescending(s => s.RemainingLessons))
+        {
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <button class="w-full px-4 py-4 text-left flex justify-between items-center focus:outline-none hover:bg-gray-50 transition-colors" @onclick="() => ToggleExpanded(subject.SubjectId)">
+                    <div class="flex-1 pr-4">
+                        <div class="flex justify-between mb-1">
+                            <span class="font-bold text-gray-800">@subject.SubjectName</span>
+                            <span class="text-sm font-medium text-gray-600">@subject.RemainingLessons left</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2 progress">
+                            @{
+                                int total = subject.TotalLessons > 0 ? subject.TotalLessons : Math.Max(1, subject.RemainingLessons);
+                                int percentage = 100 - ((subject.RemainingLessons * 100) / total);
+                            }
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: @percentage%"></div>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 @(expandedSubjects.Contains(subject.SubjectId) ? "rotate-180" : "")" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                @if (expandedSubjects.Contains(subject.SubjectId))
+                {
+                    <div class="px-4 py-3 bg-gray-50 border-t border-gray-100 text-sm text-gray-700">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <span class="block text-gray-500 text-xs uppercase tracking-wide">Total Lessons</span>
+                                <span class="font-semibold">@subject.TotalLessons</span>
+                            </div>
+                            <div>
+                                <span class="block text-gray-500 text-xs uppercase tracking-wide">Canceled</span>
+                                <span class="font-semibold text-red-600">@subject.CanceledLessons</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private bool loading = true;
+    private CalculationResult? result;
+    private HashSet<int> expandedSubjects = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try 
+        {
+            var user = await AuthService.GetCurrentUserAsync();
+            if (user != null && !string.IsNullOrEmpty(user.Username))
+            {
+                result = await CalculationService.CalculateRemainingTimeAsync(user.Username);
+            }
+        }
+        catch 
+        {
+            result = null;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void ToggleExpanded(int subjectId)
+    {
+        if (expandedSubjects.Contains(subjectId))
+            expandedSubjects.Remove(subjectId);
+        else
+            expandedSubjects.Add(subjectId);
+    }
+}

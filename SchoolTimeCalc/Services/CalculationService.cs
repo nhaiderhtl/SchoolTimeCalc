@@ -69,8 +69,26 @@ namespace SchoolTimeCalc.Services
 
             var activeDays = new HashSet<int>();
             var subjectCounts = new Dictionary<int, int>();
+            var subjectTotals = new Dictionary<int, int>();
+            var subjectCanceled = new Dictionary<int, int>();
             int totalRemainingLessons = 0;
             int lastLessonDateInt = today;
+
+            foreach (var lesson in lessons)
+            {
+                bool isCanceled = lesson.Stat == "CANCEL" || lesson.Stat == "cancelled" || lesson.Stat == "CANCELLED";
+                foreach (var su in lesson.Su ?? Enumerable.Empty<UntisLessonSubject>())
+                {
+                    if (!subjectTotals.ContainsKey(su.Id)) subjectTotals[su.Id] = 0;
+                    subjectTotals[su.Id]++;
+                    
+                    if (isCanceled)
+                    {
+                        if (!subjectCanceled.ContainsKey(su.Id)) subjectCanceled[su.Id] = 0;
+                        subjectCanceled[su.Id]++;
+                    }
+                }
+            }
 
             foreach (var lesson in futureLessons)
             {
@@ -113,7 +131,9 @@ namespace SchoolTimeCalc.Services
                 {
                     SubjectId = kvp.Key,
                     SubjectName = subjectMap.ContainsKey(kvp.Key) ? subjectMap[kvp.Key] : $"Subject {kvp.Key}",
-                    RemainingLessons = kvp.Value
+                    RemainingLessons = kvp.Value,
+                    TotalLessons = subjectTotals.ContainsKey(kvp.Key) ? subjectTotals[kvp.Key] : kvp.Value,
+                    CanceledLessons = subjectCanceled.ContainsKey(kvp.Key) ? subjectCanceled[kvp.Key] : 0
                 });
             }
 
