@@ -2,8 +2,10 @@
 @using SchoolTimeCalc.Data
 @using SchoolTimeCalc.Models
 @using SchoolTimeCalc.Services
+@using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext DbContext
 @inject MockAuthService AuthService
+@inject IHolidaySyncService HolidaySyncService
 @rendermode InteractiveServer
 
 <PageTitle>Settings</PageTitle>
@@ -16,42 +18,123 @@
 }
 else
 {
-    <div class="bg-white p-6 rounded-lg shadow-md max-w-md border border-gray-200">
-        <EditForm Model="user" OnValidSubmit="SaveSettings">
-            <div class="mb-4">
-                <label class="block text-gray-700 font-semibold mb-2" for="bundesland">
-                    Austrian State (Bundesland)
-                </label>
-                <InputSelect id="bundesland" @bind-Value="user.Bundesland" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">Select your state...</option>
-                    @foreach (var state in AustrianStates.States)
-                    {
-                        <option value="@state">@state</option>
-                    }
-                </InputSelect>
-            </div>
-            
-            <div class="flex items-center">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                    Save Settings
-                </button>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- General Settings -->
+        <div class="bg-white p-6 rounded-lg shadow-md max-w-md border border-gray-200">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">General Settings</h2>
+            <EditForm Model="user" OnValidSubmit="SaveSettings">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2" for="bundesland">
+                        Austrian State (Bundesland)
+                    </label>
+                    <InputSelect id="bundesland" @bind-Value="user.Bundesland" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select your state...</option>
+                        @foreach (var state in AustrianStates.States)
+                        {
+                            <option value="@state">@state</option>
+                        }
+                    </InputSelect>
+                </div>
                 
-                @if (showSuccessMessage)
+                <div class="flex items-center">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Save Settings
+                    </button>
+                    
+                    @if (showSuccessMessage)
+                    {
+                        <span class="text-green-600 ml-4 font-medium transition-opacity duration-300">Settings saved successfully!</span>
+                    }
+                </div>
+            </EditForm>
+        </div>
+
+        <!-- WebUntis Holiday Sync -->
+        <div class="bg-white p-6 rounded-lg shadow-md max-w-md border border-gray-200">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">WebUntis Holiday Sync</h2>
+            
+            <div class="mb-4 text-sm text-gray-600">
+                <p class="mb-1"><strong>Status:</strong> 
+                    @if (user.WebUntisData?.LastHolidaySync.HasValue == true)
+                    {
+                        <span class="text-green-600">Last synced on @user.WebUntisData.LastHolidaySync.Value.ToString("g")</span>
+                    }
+                    else
+                    {
+                        <span class="text-yellow-600">Never synced</span>
+                    }
+                </p>
+                <p><strong>Holidays Cached:</strong> @cachedHolidaysCount holidays cached for your school.</p>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2" for="server">Server</label>
+                <input id="server" @bind="syncServer" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g. tipo.webuntis.com" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2" for="school">School Name</label>
+                <input id="school" @bind="syncSchool" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2" for="username">Username</label>
+                <input id="username" @bind="syncUsername" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2" for="password">Password</label>
+                <input id="password" @bind="syncPassword" type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+            </div>
+
+            <div class="flex flex-col">
+                <button @onclick="SyncHolidays" disabled="@isSyncing" class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out self-start">
+                    @if (isSyncing)
+                    {
+                        <span>Syncing... <span class="animate-spin inline-block ml-1">↻</span></span>
+                    }
+                    else
+                    {
+                        <span>Sync Holidays Now</span>
+                    }
+                </button>
+
+                @if (!string.IsNullOrEmpty(syncMessage))
                 {
-                    <span class="text-green-600 ml-4 font-medium transition-opacity duration-300">Settings saved successfully!</span>
+                    <div class="mt-4 p-3 rounded-md @(syncIsError ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700")">
+                        @syncMessage
+                    </div>
                 }
             </div>
-        </EditForm>
+        </div>
     </div>
 }
 
 @code {
     private ApplicationUser? user;
     private bool showSuccessMessage = false;
+    
+    private int cachedHolidaysCount = 0;
+    private string syncServer = "";
+    private string syncSchool = "";
+    private string syncUsername = "";
+    private string syncPassword = "";
+    private bool isSyncing = false;
+    private string syncMessage = "";
+    private bool syncIsError = false;
 
     protected override async Task OnInitializedAsync()
     {
-        user = await AuthService.GetCurrentUserAsync();
+        user = await DbContext.Users.Include(u => u.WebUntisData).FirstOrDefaultAsync(u => u.Username == "testuser");
+        
+        if (user == null)
+        {
+            user = await AuthService.GetCurrentUserAsync();
+            user = await DbContext.Users.Include(u => u.WebUntisData).FirstOrDefaultAsync(u => u.Username == "testuser");
+        }
+
+        if (user != null && user.WebUntisData != null && !string.IsNullOrEmpty(user.WebUntisData.SchoolName))
+        {
+            syncSchool = user.WebUntisData.SchoolName;
+            cachedHolidaysCount = await DbContext.Holidays.CountAsync(h => h.SchoolId == user.WebUntisData.SchoolName);
+        }
     }
 
     private async Task SaveSettings()
@@ -65,6 +148,39 @@ else
             
             await Task.Delay(3000);
             showSuccessMessage = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SyncHolidays()
+    {
+        if (string.IsNullOrWhiteSpace(syncServer) || string.IsNullOrWhiteSpace(syncSchool) || string.IsNullOrWhiteSpace(syncUsername) || string.IsNullOrWhiteSpace(syncPassword))
+        {
+            syncIsError = true;
+            syncMessage = "Please fill in all WebUntis credentials to sync.";
+            return;
+        }
+
+        isSyncing = true;
+        syncMessage = "";
+        StateHasChanged();
+
+        try
+        {
+            await HolidaySyncService.SyncHolidaysAsync(syncServer, syncSchool, syncUsername, syncPassword);
+            
+            syncIsError = false;
+            syncMessage = "Holidays synced successfully!";
+            await OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            syncIsError = true;
+            syncMessage = $"Sync failed: {ex.Message}";
+        }
+        finally
+        {
+            isSyncing = false;
             StateHasChanged();
         }
     }
