@@ -19,12 +19,21 @@ namespace SchoolTimeCalc.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger<WebUntisHolidaySyncService> _logger;
+        private readonly INationalHolidayService _nationalHolidayService;
+        private readonly ISchoolHolidayService _schoolHolidayService;
 
-        public WebUntisHolidaySyncService(IHttpClientFactory httpClientFactory, ApplicationDbContext dbContext, ILogger<WebUntisHolidaySyncService> logger)
+        public WebUntisHolidaySyncService(
+            IHttpClientFactory httpClientFactory, 
+            ApplicationDbContext dbContext, 
+            ILogger<WebUntisHolidaySyncService> logger,
+            INationalHolidayService nationalHolidayService,
+            ISchoolHolidayService schoolHolidayService)
         {
             _httpClientFactory = httpClientFactory;
             _dbContext = dbContext;
             _logger = logger;
+            _nationalHolidayService = nationalHolidayService;
+            _schoolHolidayService = schoolHolidayService;
         }
 
         public async Task SyncHolidaysAsync(string server, string schoolName, string username, string password, CancellationToken cancellationToken = default)
@@ -84,6 +93,8 @@ namespace SchoolTimeCalc.Services
                 var existingHolidays = await _dbContext.Holidays.Where(h => h.SchoolId == schoolName).ToListAsync(cancellationToken);
                 var existingDict = existingHolidays.ToDictionary(h => h.Name + h.StartDate.ToString("yyyyMMdd") + h.EndDate.ToString("yyyyMMdd"));
 
+                var allHolidaysToSave = new List<Holiday>();
+
                 foreach (var dto in dtos)
                 {
                     if (DateTime.TryParseExact(dto.StartDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var startDate) &&
@@ -92,7 +103,7 @@ namespace SchoolTimeCalc.Services
                         var key = dto.LongName + dto.StartDate.ToString() + dto.EndDate.ToString();
                         if (!existingDict.ContainsKey(key))
                         {
-                            _dbContext.Holidays.Add(new Holiday
+                            allHolidaysToSave.Add(new Holiday
                             {
                                 Name = dto.LongName,
                                 StartDate = startDate,
@@ -103,7 +114,56 @@ namespace SchoolTimeCalc.Services
                     }
                 }
 
-                var webUntisData = await _dbContext.Set<WebUntisData>().FirstOrDefaultAsync(w => w.SchoolName == schoolName, cancellationToken);
+                // Fetch National and School Holidays
+                var currentYear = DateTime.Now.Year;
+                var nationalHolidays = _nationalHolidayService.GetAustrianHolidays(currentYear).ToList();
+                var bundesland = "AT-9"; // Need proper way to fetch bundesland, hardcoding Wien for now
+                var webUntisData = await _dbContext.Set<WebUntisData>()
+                    .Include(w => w.ApplicationUser)
+                    .FirstOrDefaultAsync(w => w.SchoolName == schoolName, cancellationToken);
+                
+                if (webUntisData?.ApplicationUser?.Bundesland != null)
+                {
+                    bundesland = webUntisData.ApplicationUser.Bundesland;
+                }
+
+                var schoolHolidays = await _schoolHolidayService.FetchAndCacheSchoolHolidaysAsync(currentYear, bundesland);
+                
+                foreach(var nh in nationalHolidays)
+                {
+                    var key = nh.Name + nh.StartDate.ToString("yyyyMMdd") + nh.EndDate.ToString("yyyyMMdd");
+                    if (!existingDict.ContainsKey(key))
+                    {
+                        allHolidaysToSave.Add(new Holiday
+                        {
+                            Name = nh.Name,
+                            StartDate = nh.StartDate,
+                            EndDate = nh.EndDate,
+                            SchoolId = schoolName
+                        });
+                    }
+                }
+
+                foreach(var sh in schoolHolidays)
+                {
+                    var key = sh.Name + sh.StartDate.ToString("yyyyMMdd") + sh.EndDate.ToString("yyyyMMdd");
+                    if (!existingDict.ContainsKey(key))
+                    {
+                        allHolidaysToSave.Add(new Holiday
+                        {
+                            Name = sh.Name,
+                            StartDate = sh.StartDate,
+                            EndDate = sh.EndDate,
+                            SchoolId = schoolName
+                        });
+                    }
+                }
+
+                if (allHolidaysToSave.Any())
+                {
+                    _dbContext.Holidays.AddRange(allHolidaysToSave);
+                }
+
                 if (webUntisData != null)
                 {
                     webUntisData.LastHolidaySync = DateTime.UtcNow;

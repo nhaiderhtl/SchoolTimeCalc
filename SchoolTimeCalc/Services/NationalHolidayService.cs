@@ -6,7 +6,7 @@ using SchoolTimeCalc.Models;
 
 namespace SchoolTimeCalc.Services
 {
-    public class NationalHolidayService
+    public class NationalHolidayService : INationalHolidayService
     {
         public IEnumerable<Holiday> GetAustrianHolidays(int year)
         {

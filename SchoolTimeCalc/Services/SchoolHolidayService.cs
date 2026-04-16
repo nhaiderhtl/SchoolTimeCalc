@@ -8,7 +8,22 @@ using SchoolTimeCalc.Models;
 
 namespace SchoolTimeCalc.Services
 {
-    public class SchoolHolidayService
+    public class OpenHolidayApiResponse
+    {
+        public string? Id { get; set; }
+        public string? StartDate { get; set; }
+        public string? EndDate { get; set; }
+        public string? Type { get; set; }
+        public List<OpenHolidayName>? Name { get; set; }
+    }
+
+    public class OpenHolidayName
+    {
+        public string? Language { get; set; }
+        public string? Text { get; set; }
+    }
+
+    public class SchoolHolidayService : ISchoolHolidayService
     {
         private readonly HttpClient _httpClient;
         private readonly ApplicationDbContext _dbContext;
@@ -34,18 +49,30 @@ namespace SchoolTimeCalc.Services
             var fetchedHolidays = new List<Holiday>();
             try
             {
-                // Mock API call to data.gv.at
-                // e.g. var response = await _httpClient.GetFromJsonAsync<HolidayApiResponse>($"...{year}...");
-                // Note: The specific URL/model needs to be aligned with the actual data.gv.at structure later.
-                
-                fetchedHolidays.Add(new Holiday
+                // Call a generic open API for school holidays
+                var url = $"https://openholidaysapi.org/SchoolHolidays?countryIsoCode=AT&languageIsoCode=DE&validFrom={year}-01-01&validTo={year}-12-31&subdivisionCode=AT-{bundesland.Substring(0, Math.Min(1, bundesland.Length))}";
+                var response = await _httpClient.GetAsync(url);
+                if (response.IsSuccessStatusCode)
                 {
-                    Name = "Weihnachtsferien",
-                    StartDate = new DateTime(year, 12, 25),
-                    EndDate = new DateTime(year + 1, 1, 6),
-                    SchoolId = "School_" + bundesland
-                });
-                // Soft fail gracefully if there's an actual exception with actual API
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var apiHolidays = System.Text.Json.JsonSerializer.Deserialize<List<OpenHolidayApiResponse>>(jsonResponse, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (apiHolidays != null)
+                    {
+                        foreach (var h in apiHolidays)
+                        {
+                            if (h.Name != null && h.Name.Count > 0 && DateTime.TryParse(h.StartDate, out var sDate) && DateTime.TryParse(h.EndDate, out var eDate))
+                            {
+                                fetchedHolidays.Add(new Holiday
+                                {
+                                    Name = h.Name[0].Text ?? "Ferien",
+                                    StartDate = sDate,
+                                    EndDate = eDate,
+                                    SchoolId = "School_" + bundesland
+                                });
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception)
             {
