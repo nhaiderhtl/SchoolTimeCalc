@@ -1,11 +1,13 @@
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace SchoolTimeCalc.Migrations
 {
+    /// <inheritdoc />
     public partial class AddUntisUsername : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
@@ -16,6 +18,7 @@ namespace SchoolTimeCalc.Migrations
                 defaultValue: "");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
