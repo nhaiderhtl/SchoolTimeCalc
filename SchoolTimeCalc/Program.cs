@@ -19,6 +19,8 @@ builder.Services.AddScoped<MockAuthService>();
 builder.Services.AddScoped<WebUntisService>();
 builder.Services.AddScoped<NationalHolidayService>();
 builder.Services.AddScoped<SchoolHolidayService>();
+builder.Services.AddScoped<IHolidaySyncService, WebUntisHolidaySyncService>();
+builder.Services.AddHostedService<HolidaySyncBackgroundService>();
 
 builder.Services.AddHttpClient("WebUntis")
     .AddPolicyHandler(HttpPolicyExtensions
