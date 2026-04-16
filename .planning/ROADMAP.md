@@ -43,7 +43,7 @@
   1. System successfully fetches holiday data from WebUntis API alongside timetables
   2. Holiday data is structured to be subtracted from or not added to total school day counts
 **Plans**: 3 plans
-- [ ] 03-01-PLAN.md — Holiday Data Models & API Client Expansion
+- [x] 03-01-PLAN.md — Holiday Data Models & API Client Expansion
 - [ ] 03-02-PLAN.md — Holiday Sync Service
 - [ ] 03-03-PLAN.md — Integration & Settings UI Updates
 
@@ -74,6 +74,6 @@
 |-------|----------------|--------|-----------|
 | 1. Setup & Settings | 0/0 | Not started | - |
 | 2. WebUntis Integration | 0/0 | Not started | - |
-| 3. WebUntis Holiday Integration | 0/3 | Not started | - |
+| 3. WebUntis Holiday Integration | 1/3 | In Progress|  |
 | 4. Calculation Engine | 0/0 | Not started | - |
 | 5. Presentation & Dashboard | 0/0 | Not started | - |
