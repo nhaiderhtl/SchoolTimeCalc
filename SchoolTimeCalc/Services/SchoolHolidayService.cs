@@ -36,6 +36,34 @@ namespace SchoolTimeCalc.Services
 
         public async Task<List<Holiday>> FetchAndCacheSchoolHolidaysAsync(int year, string bundesland)
         {
+            var stateCodes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Burgenland", "1" },
+                { "Kärnten", "2" },
+                { "Niederösterreich", "3" },
+                { "Oberösterreich", "4" },
+                { "Salzburg", "5" },
+                { "Steiermark", "6" },
+                { "Tirol", "7" },
+                { "Vorarlberg", "8" },
+                { "Wien", "9" },
+                { "AT-1", "1" },
+                { "AT-2", "2" },
+                { "AT-3", "3" },
+                { "AT-4", "4" },
+                { "AT-5", "5" },
+                { "AT-6", "6" },
+                { "AT-7", "7" },
+                { "AT-8", "8" },
+                { "AT-9", "9" }
+            };
+
+            var subdivisionCode = "9"; // default to Wien
+            if (bundesland != null && stateCodes.TryGetValue(bundesland, out var code))
+            {
+                subdivisionCode = code;
+            }
+
             // Check cache first
             var cachedHolidays = await _dbContext.Holidays
                 .Where(h => h.SchoolId == "School_" + bundesland && h.StartDate.Year == year)
@@ -50,7 +78,7 @@ namespace SchoolTimeCalc.Services
             try
             {
                 // Call a generic open API for school holidays
-                var url = $"https://openholidaysapi.org/SchoolHolidays?countryIsoCode=AT&languageIsoCode=DE&validFrom={year}-01-01&validTo={year}-12-31&subdivisionCode=AT-{bundesland.Substring(0, Math.Min(1, bundesland.Length))}";
+                var url = $"https://openholidaysapi.org/SchoolHolidays?countryIsoCode=AT&languageIsoCode=DE&validFrom={year}-01-01&validTo={year}-12-31&subdivisionCode=AT-{subdivisionCode}";
                 var response = await _httpClient.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {

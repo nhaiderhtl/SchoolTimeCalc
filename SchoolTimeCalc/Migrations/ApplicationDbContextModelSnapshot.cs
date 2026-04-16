@@ -103,6 +103,10 @@ namespace SchoolTimeCalc.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("SubjectsJson")
                         .HasColumnType("jsonb");
 

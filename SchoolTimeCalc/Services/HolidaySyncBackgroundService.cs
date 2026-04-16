@@ -55,7 +55,7 @@ namespace SchoolTimeCalc.Services
 
             foreach (var data in webUntisData)
             {
-                if (string.IsNullOrEmpty(data.SchoolName) || string.IsNullOrEmpty(data.Server) || string.IsNullOrEmpty(data.EncryptedPassword) || string.IsNullOrEmpty(data.ApplicationUser?.Username))
+                if (string.IsNullOrEmpty(data.SchoolName) || string.IsNullOrEmpty(data.Server) || string.IsNullOrEmpty(data.EncryptedPassword) || string.IsNullOrEmpty(data.Username))
                 {
                     _logger.LogWarning("Missing credentials for WebUntisData ID {Id}. Skipping.", data.Id);
                     continue;
@@ -63,7 +63,7 @@ namespace SchoolTimeCalc.Services
 
                 try
                 {
-                    await syncService.SyncHolidaysAsync(data.Server, data.SchoolName, data.ApplicationUser.Username, data.EncryptedPassword, stoppingToken);
+                    await syncService.SyncHolidaysAsync(data.Server, data.SchoolName, data.Username, data.EncryptedPassword, stoppingToken);
                 }
                 catch (Exception ex)
                 {

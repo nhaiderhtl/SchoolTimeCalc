@@ -58,7 +58,7 @@ namespace SchoolTimeCalc.Services
             if (authRes?.Error != null || authRes?.Result == null)
             {
                 _logger.LogError("Authentication failed: {Error}", authRes?.Error?.Message);
-                return;
+                throw new Exception($"Authentication failed: {authRes?.Error?.Message ?? "Unknown error"}");
             }
 
             var cookie = $"JSESSIONID={authRes.Result.SessionId}";
@@ -74,7 +74,7 @@ namespace SchoolTimeCalc.Services
                 if (holidayRes?.Error != null)
                 {
                     _logger.LogError("Failed to get holidays: {Error}", holidayRes.Error.Message);
-                    return;
+                    throw new Exception($"Failed to get holidays: {holidayRes.Error.Message}");
                 }
 
                 var dtos = new List<UntisHolidayDto>();

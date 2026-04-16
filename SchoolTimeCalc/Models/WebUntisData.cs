@@ -7,6 +7,7 @@ namespace SchoolTimeCalc.Models
         public ApplicationUser ApplicationUser { get; set; } = null!;
         public string SchoolName { get; set; } = string.Empty;
         public string Server { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
         public string? EncryptedPassword { get; set; }
         public string? SubjectsJson { get; set; }
         public string? TeachersJson { get; set; }

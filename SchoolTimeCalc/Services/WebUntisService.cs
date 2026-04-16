@@ -1,7 +1,9 @@
 using System;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Refit;
 using SchoolTimeCalc.Data;
 using SchoolTimeCalc.Models;
 
@@ -9,19 +11,25 @@ namespace SchoolTimeCalc.Services
 {
     public class WebUntisService
     {
-        private readonly IWebUntisClient _client;
         private readonly ApplicationDbContext _dbContext;
         private readonly MockAuthService _authService;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IHolidaySyncService _holidaySyncService;
 
-        public WebUntisService(IWebUntisClient client, ApplicationDbContext dbContext, MockAuthService authService)
+        public WebUntisService(ApplicationDbContext dbContext, MockAuthService authService, IHttpClientFactory httpClientFactory, IHolidaySyncService holidaySyncService)
         {
-            _client = client;
             _dbContext = dbContext;
             _authService = authService;
+            _httpClientFactory = httpClientFactory;
+            _holidaySyncService = holidaySyncService;
         }
 
         public async Task<bool> AuthenticateAndSyncAsync(string server, string school, string username, string password)
         {
+            var httpClient = _httpClientFactory.CreateClient("WebUntis");
+            httpClient.BaseAddress = new Uri($"https://{server}");
+            var _client = RestService.For<IWebUntisClient>(httpClient);
+
             string? sessionId = null;
             try
             {
@@ -38,6 +46,25 @@ namespace SchoolTimeCalc.Services
                 };
 
                 var response = await _client.AuthenticateAsync(request, school);
+
+                // Fallback: If invalid schoolname and the server is a custom subdomain, use the subdomain
+                if (response?.Error?.Code == -8500 && !string.IsNullOrEmpty(server))
+                {
+                    var serverSubdomain = server.Split('.')[0].ToLowerInvariant();
+                    if (!string.Equals(serverSubdomain, "tipo", StringComparison.OrdinalIgnoreCase) &&
+                        !string.Equals(serverSubdomain, "mese", StringComparison.OrdinalIgnoreCase) &&
+                        !string.Equals(serverSubdomain, "hector", StringComparison.OrdinalIgnoreCase) &&
+                        !string.Equals(serverSubdomain, "arche", StringComparison.OrdinalIgnoreCase) &&
+                        !string.Equals(serverSubdomain, "perseus", StringComparison.OrdinalIgnoreCase))
+                    {
+                        response = await _client.AuthenticateAsync(request, serverSubdomain);
+                        if (response?.Result != null)
+                        {
+                            school = serverSubdomain; // Update for subsequent requests
+                        }
+                    }
+                }
+
                 if (response == null || response.Result == null || string.IsNullOrEmpty(response.Result.SessionId))
                 {
                     return false;
@@ -92,12 +119,25 @@ namespace SchoolTimeCalc.Services
                 }
 
                 data.SchoolName = school;
+                data.Server = server;
+                data.Username = username;
+                data.EncryptedPassword = password;
                 data.SubjectsJson = subjectsJson;
                 data.TeachersJson = teachersJson;
                 data.RoomsJson = roomsJson;
                 data.LessonsJson = lessonsJson;
 
                 await _dbContext.SaveChangesAsync();
+
+                // Trigger holiday sync alongside timetable sync
+                try
+                {
+                    await _holidaySyncService.SyncHolidaysAsync(server, school, username, password);
+                }
+                catch
+                {
+                    // Optionally log error but don't fail the timetable sync
+                }
 
                 return true;
             }
