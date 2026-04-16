@@ -1,0 +1,25 @@
+@page "/dashboard"
+@using SchoolTimeCalc.Components.Widgets
+@rendermode InteractiveServer
+
+<PageTitle>Dashboard</PageTitle>
+
+<div class="max-w-4xl mx-auto p-4 md:p-6 lg:p-8">
+    <div class="mb-6 md:mb-8">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">Macro Progress</h1>
+        <p class="mt-2 text-sm md:text-base text-gray-600">Your high-level overview of remaining school time.</p>
+    </div>
+
+    <!-- Macro Progress Widget -->
+    <div class="mb-10 w-full">
+        <MacroProgressWidget />
+    </div>
+
+    <!-- Placeholder for further widgets from future phases -->
+    <div class="grid grid-cols-1 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow border border-gray-100">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Subject Breakdown</h2>
+            <p class="text-gray-500 italic text-sm">Detailed subject progress will appear here in the next phase.</p>
+        </div>
+    </div>
+</div>
