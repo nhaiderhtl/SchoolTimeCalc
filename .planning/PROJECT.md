@@ -19,12 +19,11 @@ Accurately and automatically calculating the exact remaining time (days, hours, 
 - [x] Calculate total remaining school days in the academic year (Phase 04)
 - [x] Calculate total remaining hours/lessons for the academic year (Phase 04)
 - [x] Calculate remaining lessons on a per-subject basis (Phase 04)
+- [x] Display a calendar interface showing the timetable and holidays (Phase 05)
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
-
-- [ ] Display a calendar interface showing the timetable and holidays
 
 ### Out of Scope
 
@@ -73,4 +72,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-16 after phase 04 completion*
+*Last updated: 2026-04-16 after phase 05 completion*
