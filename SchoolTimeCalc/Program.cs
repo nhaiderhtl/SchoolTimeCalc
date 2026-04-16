@@ -21,6 +21,7 @@ builder.Services.AddScoped<INationalHolidayService, NationalHolidayService>();
 builder.Services.AddScoped<ISchoolHolidayService, SchoolHolidayService>();
 builder.Services.AddScoped<IHolidaySyncService, WebUntisHolidaySyncService>();
 builder.Services.AddScoped<CalculationEngine>();
+builder.Services.AddScoped<ICalculationService, CalculationService>();
 builder.Services.AddHostedService<HolidaySyncBackgroundService>();
 
 builder.Services.AddHttpClient("WebUntis")
