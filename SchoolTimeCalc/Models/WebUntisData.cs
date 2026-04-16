@@ -10,5 +10,6 @@ namespace SchoolTimeCalc.Models
         public string? TeachersJson { get; set; }
         public string? RoomsJson { get; set; }
         public string? LessonsJson { get; set; }
+        public DateTime? LastHolidaySync { get; set; }
     }
 }

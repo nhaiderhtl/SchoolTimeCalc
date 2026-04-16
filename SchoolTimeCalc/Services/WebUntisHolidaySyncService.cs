@@ -103,6 +103,13 @@ namespace SchoolTimeCalc.Services
                     }
                 }
 
+                var webUntisData = await _dbContext.Set<WebUntisData>().FirstOrDefaultAsync(w => w.SchoolName == schoolName, cancellationToken);
+                if (webUntisData != null)
+                {
+                    webUntisData.LastHolidaySync = DateTime.UtcNow;
+                    _dbContext.Update(webUntisData);
+                }
+
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 _logger.LogInformation("Holiday sync completed successfully for {SchoolName}", schoolName);
             }
