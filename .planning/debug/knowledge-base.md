@@ -40,3 +40,10 @@ Resolved debug sessions. Used by `gsd-debugger` to surface known-pattern hypothe
 - **Fix:** Ran 'dotnet ef migrations remove' to undo the broken snapshot, then regenerated 'AddUntisUsername' which correctly created the ALTER TABLE scripts, and applied it via 'dotnet ef database update'.
 - **Files changed:** SchoolTimeCalc/Migrations/20260416093817_AddUntisUsername.cs, SchoolTimeCalc/Migrations/20260416093817_AddUntisUsername.Designer.cs, SchoolTimeCalc/Migrations/ApplicationDbContextModelSnapshot.cs
 ---
+## cs0103-webuntisdata-not-exist — Compile error due to missing webUntisData variable
+- **Date:** 2026-04-16T12:00:00Z
+- **Error patterns:** CS0103, The name 'webUntisData' does not exist in the current context, build fails
+- **Root cause:** A previous edit deleted the code block that fetched `webUntisData` from the database, but left the code that attempts to update `webUntisData.LastHolidaySync` intact.
+- **Fix:** Added `var webUntisData = await _dbContext.Set<WebUntisData>().FirstOrDefaultAsync(w => w.SchoolName == schoolName, cancellationToken);` before its usage on line 125.
+- **Files changed:** SchoolTimeCalc/Services/WebUntisHolidaySyncService.cs
+---
