@@ -33,3 +33,10 @@ Resolved debug sessions. Used by `gsd-debugger` to surface known-pattern hypothe
 - **Fix:** Generated the missing EF Core migration (`AddEncryptedPassword`) using `dotnet ef migrations add`. The application automatically applies this migration on startup, resolving the schema mismatch.
 - **Files changed:** SchoolTimeCalc/Migrations/20260416085319_AddEncryptedPassword.cs, SchoolTimeCalc/Migrations/20260416085319_AddEncryptedPassword.Designer.cs, SchoolTimeCalc/Migrations/ApplicationDbContextModelSnapshot.cs
 ---
+## missing-webuntis-username-column — Missing EF Core migration for WebUntisData Username column
+- **Date:** 2026-04-16T11:40:00Z
+- **Error patterns:** 42703, column w.Username does not exist, Npgsql.PostgresException, EntityFrameworkCore.Query
+- **Root cause:** The ApplicationDbContextModelSnapshot.cs snapshot was out of sync due to a broken/manual migration, causing 'dotnet ef migrations add' to generate an empty migration script instead of the ADD COLUMN command.
+- **Fix:** Ran 'dotnet ef migrations remove' to undo the broken snapshot, then regenerated 'AddUntisUsername' which correctly created the ALTER TABLE scripts, and applied it via 'dotnet ef database update'.
+- **Files changed:** SchoolTimeCalc/Migrations/20260416093817_AddUntisUsername.cs, SchoolTimeCalc/Migrations/20260416093817_AddUntisUsername.Designer.cs, SchoolTimeCalc/Migrations/ApplicationDbContextModelSnapshot.cs
+---
