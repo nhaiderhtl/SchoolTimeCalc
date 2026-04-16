@@ -26,3 +26,10 @@ Resolved debug sessions. Used by `gsd-debugger` to surface known-pattern hypothe
 - **Files changed:** SchoolTimeCalc/Program.cs
 ---
 
+## missing-encryptedpassword-column — EF Core missing migration for EncryptedPassword column
+- **Date:** 2026-04-16T00:00:00.000Z
+- **Error patterns:** fail, Program[0], An error occurred while migrating the database, System.InvalidOperationException, Microsoft.EntityFrameworkCore.Migrations.PendingModelChangesWarning, pending changes, Add a new migration before updating the database, Npgsql.PostgresException, 42703, column w.EncryptedPassword does not exist, warning about pending model changes
+- **Root cause:** The WebUntisData entity model was modified to include the EncryptedPassword, Server, and LastHolidaySync properties, but an EF Core migration was never generated for these pending model changes.
+- **Fix:** Generated the missing EF Core migration (`AddEncryptedPassword`) using `dotnet ef migrations add`. The application automatically applies this migration on startup, resolving the schema mismatch.
+- **Files changed:** SchoolTimeCalc/Migrations/20260416085319_AddEncryptedPassword.cs, SchoolTimeCalc/Migrations/20260416085319_AddEncryptedPassword.Designer.cs, SchoolTimeCalc/Migrations/ApplicationDbContextModelSnapshot.cs
+---
