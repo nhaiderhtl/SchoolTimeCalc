@@ -55,18 +55,15 @@ namespace SchoolTimeCalc.Services
 
             foreach (var data in webUntisData)
             {
-                if (string.IsNullOrEmpty(data.SchoolName))
+                if (string.IsNullOrEmpty(data.SchoolName) || string.IsNullOrEmpty(data.Server) || string.IsNullOrEmpty(data.EncryptedPassword) || string.IsNullOrEmpty(data.ApplicationUser?.Username))
+                {
+                    _logger.LogWarning("Missing credentials for WebUntisData ID {Id}. Skipping.", data.Id);
                     continue;
+                }
 
                 try
                 {
-                    // Note: Username and password would need to be stored or retrieved from somewhere
-                    // For now, we assume a mechanism exists to get them or we sync using a service account
-                    // If we don't have passwords, we'd need to change how this syncs or rely on user login trigger.
-                    // A placeholder password string is used here for architecture completeness.
-                    string server = "ikarus.webuntis.com"; // Default placeholder
-                    
-                    await syncService.SyncHolidaysAsync(server, data.SchoolName, data.ApplicationUser.Username, "placeholder_password", stoppingToken);
+                    await syncService.SyncHolidaysAsync(data.Server, data.SchoolName, data.ApplicationUser.Username, data.EncryptedPassword, stoppingToken);
                 }
                 catch (Exception ex)
                 {
