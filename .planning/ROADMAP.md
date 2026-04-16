@@ -60,7 +60,7 @@
   3. Calculations successfully merge the base timetable with the acquired holiday datasets
 **Plans**: 2 plans
 - [x] 04-01-PLAN.md — Core Calculation Logic & Service
-- [ ] 04-02-PLAN.md — Unit Tests for Calculation Logic
+- [x] 04-02-PLAN.md — Unit Tests for Calculation Logic
 
 ### Phase 5: Presentation & Dashboard
 **Goal**: Users can view their remaining time and schedules via an accessible interface
