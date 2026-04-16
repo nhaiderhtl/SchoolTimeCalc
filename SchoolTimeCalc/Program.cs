@@ -17,8 +17,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<MockAuthService>();
 builder.Services.AddScoped<WebUntisService>();
-builder.Services.AddScoped<NationalHolidayService>();
-builder.Services.AddScoped<SchoolHolidayService>();
+builder.Services.AddScoped<INationalHolidayService, NationalHolidayService>();
+builder.Services.AddScoped<ISchoolHolidayService, SchoolHolidayService>();
 builder.Services.AddScoped<IHolidaySyncService, WebUntisHolidaySyncService>();
 builder.Services.AddHostedService<HolidaySyncBackgroundService>();
 
