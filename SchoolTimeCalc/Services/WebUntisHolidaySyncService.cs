@@ -114,50 +114,8 @@ namespace SchoolTimeCalc.Services
                     }
                 }
 
-                // Fetch National and School Holidays
-                var currentYear = DateTime.Now.Year;
-                var nationalHolidays = _nationalHolidayService.GetAustrianHolidays(currentYear).ToList();
-                var bundesland = "AT-9"; // Need proper way to fetch bundesland, hardcoding Wien for now
-                var webUntisData = await _dbContext.Set<WebUntisData>()
-                    .Include(w => w.ApplicationUser)
-                    .FirstOrDefaultAsync(w => w.SchoolName == schoolName, cancellationToken);
-                
-                if (webUntisData?.ApplicationUser?.Bundesland != null)
-                {
-                    bundesland = webUntisData.ApplicationUser.Bundesland;
-                }
-
-                var schoolHolidays = await _schoolHolidayService.FetchAndCacheSchoolHolidaysAsync(currentYear, bundesland);
-                
-                foreach(var nh in nationalHolidays)
-                {
-                    var key = nh.Name + nh.StartDate.ToString("yyyyMMdd") + nh.EndDate.ToString("yyyyMMdd");
-                    if (!existingDict.ContainsKey(key))
-                    {
-                        allHolidaysToSave.Add(new Holiday
-                        {
-                            Name = nh.Name,
-                            StartDate = nh.StartDate,
-                            EndDate = nh.EndDate,
-                            SchoolId = schoolName
-                        });
-                    }
-                }
-
-                foreach(var sh in schoolHolidays)
-                {
-                    var key = sh.Name + sh.StartDate.ToString("yyyyMMdd") + sh.EndDate.ToString("yyyyMMdd");
-                    if (!existingDict.ContainsKey(key))
-                    {
-                        allHolidaysToSave.Add(new Holiday
-                        {
-                            Name = sh.Name,
-                            StartDate = sh.StartDate,
-                            EndDate = sh.EndDate,
-                            SchoolId = schoolName
-                        });
-                    }
-                }
+                // Only use WebUntis holidays as per user request
+                // Fetch National and School Holidays removed
 
                 if (allHolidaysToSave.Any())
                 {

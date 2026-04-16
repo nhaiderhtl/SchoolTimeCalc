@@ -40,7 +40,7 @@ namespace SchoolTimeCalc.Services
                 .Where(h => h.SchoolId == schoolId)
                 .ToListAsync();
 
-            DateTime current = DateTime.Today;
+            DateTime current = DateTime.Today.AddDays(1);
             // Assuming end of school year is roughly early July in Austria (e.g., July 4th)
             DateTime targetEndDate = new DateTime(current.Year + (current.Month >= 7 ? 1 : 0), 7, 4);
 
