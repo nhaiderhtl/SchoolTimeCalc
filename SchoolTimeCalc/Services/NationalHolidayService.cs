@@ -16,9 +16,9 @@ namespace SchoolTimeCalc.Services
             return publicHolidays.Select(h => new Holiday
             {
                 Name = h.LocalName,
-                Date = h.Date,
-                Type = "National",
-                Bundesland = null
+                StartDate = h.Date,
+                EndDate = h.Date,
+                SchoolId = "National"
             });
         }
     }

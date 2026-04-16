@@ -23,7 +23,7 @@ namespace SchoolTimeCalc.Services
         {
             // Check cache first
             var cachedHolidays = await _dbContext.Holidays
-                .Where(h => h.Type == "School" && h.Date.Year == year && h.Bundesland == bundesland)
+                .Where(h => h.SchoolId == "School_" + bundesland && h.StartDate.Year == year)
                 .ToListAsync();
 
             if (cachedHolidays.Any())
@@ -41,9 +41,9 @@ namespace SchoolTimeCalc.Services
                 fetchedHolidays.Add(new Holiday
                 {
                     Name = "Weihnachtsferien",
-                    Date = new DateTime(year, 12, 25),
-                    Type = "School",
-                    Bundesland = bundesland
+                    StartDate = new DateTime(year, 12, 25),
+                    EndDate = new DateTime(year + 1, 1, 6),
+                    SchoolId = "School_" + bundesland
                 });
                 // Soft fail gracefully if there's an actual exception with actual API
             }

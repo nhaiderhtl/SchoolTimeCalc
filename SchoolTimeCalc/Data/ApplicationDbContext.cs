@@ -38,6 +38,10 @@ namespace SchoolTimeCalc.Data
             modelBuilder.Entity<WebUntisData>()
                 .Property(w => w.LessonsJson)
                 .HasColumnType("jsonb");
+
+            modelBuilder.Entity<Holiday>()
+                .HasIndex(h => new { h.SchoolId, h.StartDate, h.EndDate })
+                .IsUnique();
         }
     }
 }
