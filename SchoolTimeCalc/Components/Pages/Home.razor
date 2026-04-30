@@ -6,7 +6,7 @@
 @inject MockAuthService AuthService
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavigationManager
-@inject CalculationEngine CalculationEngine
+@inject ICalculationService CalculationService
 @rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
@@ -72,7 +72,8 @@ else
             hasWebUntisData = webUntisData != null && !string.IsNullOrEmpty(webUntisData.SchoolName);
             if (hasWebUntisData)
             {
-                remainingDays = await CalculationEngine.CalculateRemainingSchoolDaysAsync(user.Id);
+                var calcResult = await CalculationService.CalculateRemainingTimeAsync(user.Username);
+                remainingDays = calcResult.TotalRemainingDays;
             }
             loading = false;
         }

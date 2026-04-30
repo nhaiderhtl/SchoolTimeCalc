@@ -37,10 +37,13 @@ namespace SchoolTimeCalc.Services
             List<UntisLesson> lessons;
             try
             {
+                Console.WriteLine($"[DEBUG] LessonsJson length: {webUntisData.LessonsJson?.Length}");
                 lessons = JsonSerializer.Deserialize<List<UntisLesson>>(webUntisData.LessonsJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<UntisLesson>();
+                Console.WriteLine($"[DEBUG] Deserialized {lessons.Count} lessons.");
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[DEBUG] Exception deserializing lessons: {ex}");
                 lessons = new List<UntisLesson>();
             }
 
@@ -61,79 +64,107 @@ namespace SchoolTimeCalc.Services
                 catch { }
             }
 
-            var today = int.Parse(DateTime.Today.ToString("yyyyMMdd"));
-            var futureLessons = lessons
-                .Where(l => l.Date >= today)
-                .Where(l => l.Stat != "CANCEL" && l.Stat != "cancelled" && l.Stat != "CANCELLED")
-                .ToList();
+            int startYear = DateTime.Now.Month >= 8 ? DateTime.Now.Year : DateTime.Now.Year - 1;
+            DateTime schoolYearStart = new DateTime(startYear, 9, 1);
+            DateTime schoolYearEnd = new DateTime(startYear + 1, 7, 31);
 
-            var activeDays = new HashSet<int>();
-            var subjectCounts = new Dictionary<int, int>();
+            int totalSchoolDaysYear = 0;
+            int completedSchoolDays = 0;
+            int remainingDays = 0;
+
+            DateTime currentDate = schoolYearStart;
+            while (currentDate <= schoolYearEnd)
+            {
+                if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    bool isHoliday = holidays.Any(h => currentDate >= h.StartDate && currentDate <= h.EndDate);
+                    if (!isHoliday)
+                    {
+                        totalSchoolDaysYear++;
+                        if (currentDate < DateTime.Today)
+                        {
+                            completedSchoolDays++;
+                        }
+                        else
+                        {
+                            remainingDays++;
+                        }
+                    }
+                }
+                currentDate = currentDate.AddDays(1);
+            }
+
+            var todayInt = int.Parse(DateTime.Today.ToString("yyyyMMdd"));
+
             var subjectTotals = new Dictionary<int, int>();
+            var subjectCompleted = new Dictionary<int, int>();
+            var subjectRemaining = new Dictionary<int, int>();
             var subjectCanceled = new Dictionary<int, int>();
+            int totalLessonsYear = 0;
+            int completedLessons = 0;
             int totalRemainingLessons = 0;
-            int lastLessonDateInt = today;
+            int lastLessonDateInt = todayInt;
 
             foreach (var lesson in lessons)
             {
                 bool isCanceled = lesson.Stat == "CANCEL" || lesson.Stat == "cancelled" || lesson.Stat == "CANCELLED";
+                
+                // Track lessons
+                if (!isCanceled)
+                {
+                    totalLessonsYear++;
+                    if (lesson.Date < todayInt)
+                        completedLessons++;
+                    else
+                        totalRemainingLessons++;
+                        
+                    if (lesson.Date > lastLessonDateInt)
+                        lastLessonDateInt = lesson.Date;
+                }
+
                 foreach (var su in lesson.Su ?? Enumerable.Empty<UntisLessonSubject>())
                 {
                     if (!subjectTotals.ContainsKey(su.Id)) subjectTotals[su.Id] = 0;
-                    subjectTotals[su.Id]++;
-                    
+                    if (!subjectCompleted.ContainsKey(su.Id)) subjectCompleted[su.Id] = 0;
+                    if (!subjectRemaining.ContainsKey(su.Id)) subjectRemaining[su.Id] = 0;
+                    if (!subjectCanceled.ContainsKey(su.Id)) subjectCanceled[su.Id] = 0;
+
                     if (isCanceled)
                     {
-                        if (!subjectCanceled.ContainsKey(su.Id)) subjectCanceled[su.Id] = 0;
                         subjectCanceled[su.Id]++;
                     }
-                }
-            }
-
-            foreach (var lesson in futureLessons)
-            {
-                int y = lesson.Date / 10000;
-                int m = (lesson.Date / 100) % 100;
-                int d = lesson.Date % 100;
-                var lessonDate = new DateTime(y, m, d);
-
-                if (lessonDate.DayOfWeek == DayOfWeek.Saturday || lessonDate.DayOfWeek == DayOfWeek.Sunday)
-                    continue;
-
-                bool isHoliday = holidays.Any(h => lessonDate >= h.StartDate && lessonDate <= h.EndDate);
-                if (isHoliday)
-                    continue;
-
-                activeDays.Add(lesson.Date);
-                totalRemainingLessons++;
-                if (lesson.Date > lastLessonDateInt)
-                    lastLessonDateInt = lesson.Date;
-
-                foreach (var su in lesson.Su ?? Enumerable.Empty<UntisLessonSubject>())
-                {
-                    if (subjectCounts.ContainsKey(su.Id))
-                        subjectCounts[su.Id]++;
                     else
-                        subjectCounts[su.Id] = 1;
+                    {
+                        subjectTotals[su.Id]++;
+                        if (lesson.Date < todayInt)
+                            subjectCompleted[su.Id]++;
+                        else
+                            subjectRemaining[su.Id]++;
+                    }
                 }
             }
 
             var result = new CalculationResult
             {
-                TotalRemainingDays = activeDays.Count,
+                TotalSchoolDaysYear = totalSchoolDaysYear,
+                CompletedSchoolDays = completedSchoolDays,
+                TotalRemainingDays = remainingDays,
+                TotalLessonsYear = totalLessonsYear,
+                CompletedLessons = completedLessons,
                 TotalRemainingLessons = totalRemainingLessons,
                 EndDate = new DateTime(lastLessonDateInt / 10000, (lastLessonDateInt / 100) % 100, lastLessonDateInt % 100)
             };
 
-            foreach (var kvp in subjectCounts)
+            foreach (var kvp in subjectTotals)
             {
                 result.SubjectLessons.Add(new SubjectRemainingLessons
                 {
                     SubjectId = kvp.Key,
                     SubjectName = subjectMap.ContainsKey(kvp.Key) ? subjectMap[kvp.Key] : $"Subject {kvp.Key}",
-                    RemainingLessons = kvp.Value,
-                    TotalLessons = subjectTotals.ContainsKey(kvp.Key) ? subjectTotals[kvp.Key] : kvp.Value,
-                    CanceledLessons = subjectCanceled.ContainsKey(kvp.Key) ? subjectCanceled[kvp.Key] : 0
+                    TotalLessons = kvp.Value,
+                    CompletedLessons = subjectCompleted[kvp.Key],
+                    RemainingLessons = subjectRemaining[kvp.Key],
+                    CanceledLessons = subjectCanceled[kvp.Key]
                 });
             }
 
@@ -179,10 +210,13 @@ namespace SchoolTimeCalc.Services
             List<UntisLesson> lessons;
             try
             {
+                Console.WriteLine($"[DEBUG] LessonsJson length: {webUntisData.LessonsJson?.Length}");
                 lessons = JsonSerializer.Deserialize<List<UntisLesson>>(webUntisData.LessonsJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<UntisLesson>();
+                Console.WriteLine($"[DEBUG] Deserialized {lessons.Count} lessons.");
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[DEBUG] Exception deserializing lessons: {ex}");
                 lessons = new List<UntisLesson>();
             }
 

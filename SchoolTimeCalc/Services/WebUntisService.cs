@@ -83,31 +83,55 @@ namespace SchoolTimeCalc.Services
                 var roomsReq = new UntisRpcRequest { Id = "rooms-1", Method = "getRooms" };
                 var roomsRes = await _client.GetRoomsAsync(roomsReq, school, cookie);
 
-                var ttReq = new UntisRpcRequest
+                // Fetch timetable in chunks to avoid "time range too large" errors (WebUntis limit is typically 31-35 days)
+                var allLessons = new List<JsonElement>();
+                
+                int startYear = DateTime.Now.Month >= 8 ? DateTime.Now.Year : DateTime.Now.Year - 1;
+                DateTime currentStart = new DateTime(startYear, 9, 1);
+                DateTime finalEnd = new DateTime(startYear + 1, 7, 31);
+                
+                while (currentStart <= finalEnd)
                 {
-                    Id = "tt-1",
-                    Method = "getTimetable",
-                    Params = new
+                    DateTime currentEnd = currentStart.AddDays(30);
+                    if (currentEnd > finalEnd) currentEnd = finalEnd;
+                    
+                    var ttReq = new UntisRpcRequest
                     {
-                        options = new
+                        Id = $"tt-{currentStart:yyyyMMdd}",
+                        Method = "getTimetable",
+                        Params = new
                         {
-                            element = new
+                            options = new
                             {
-                                id = response.Result.PersonType == 5 ? response.Result.PersonId : response.Result.ClassId,
-                                type = response.Result.PersonType
-                            },
-                            startDate = int.Parse(DateTime.Now.ToString("yyyyMM01")),
-                            endDate = int.Parse(DateTime.Now.ToString("yyyyMM") + DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+                                element = new
+                                {
+                                    id = response.Result.PersonType == 5 ? response.Result.PersonId : response.Result.ClassId,
+                                    type = response.Result.PersonType
+                                },
+                                startDate = int.Parse(currentStart.ToString("yyyyMMdd")),
+                                endDate = int.Parse(currentEnd.ToString("yyyyMMdd"))
+                            }
+                        }
+                    };
+                    
+                    var ttRes = await _client.GetTimetableAsync(ttReq, school, cookie);
+                    
+                    if (ttRes?.Result != null && ttRes.Result.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var item in ttRes.Result.EnumerateArray())
+                        {
+                            allLessons.Add(item);
                         }
                     }
-                };
-                var ttRes = await _client.GetTimetableAsync(ttReq, school, cookie);
+                    
+                    currentStart = currentEnd.AddDays(1);
+                }
 
                 // Serialize the JsonElement results to string
                 string subjectsJson = subjRes != null && subjRes.Result.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(subjRes.Result) : "[]";
                 string teachersJson = teachRes != null && teachRes.Result.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(teachRes.Result) : "[]";
                 string roomsJson = roomsRes != null && roomsRes.Result.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(roomsRes.Result) : "[]";
-                string lessonsJson = ttRes != null && ttRes.Result.ValueKind != JsonValueKind.Undefined ? JsonSerializer.Serialize(ttRes.Result) : "[]";
+                string lessonsJson = JsonSerializer.Serialize(allLessons);
 
                 var user = await _authService.GetCurrentUserAsync();
 
